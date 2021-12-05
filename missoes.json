@@ -1,0 +1,13 @@
+{
+    "01": {"complete": 1, "localization": "163.33333333333306, -33.833333333333165"},
+    "02": {"complete": 1, "localization": "163.33333333333306, -25.833333333333165"},
+    "03": {"complete": 1, "localization": "205.6666666666668, 149.16666666666666"},
+    "04": {"complete": 1, "localization": "145.1666666666665, 132.66666666666657"},
+    "05": {"complete": 1, "localization": "130.49999999999974, 132.66666666666657"},
+    "06": {"complete": 1, "localization": "113.99999999999977, 132.66666666666657"},
+    "07": {"complete": 1, "localization": "183.66666666666669, 75.83333333333336"},
+    "08": {"complete": 0, "localization": "202.0000000000001, 135.49999999999991","description": "dono da loja da presente ao OAK"},
+    "09": {"complete": 0, "localization": "205.6666666666668, 149.16666666666666","description": "OAK recebe presente"},
+    "10": {"complete": 0, "localization": "201.99999999999994, 130.0","description": "abrir Market in viridian city"},
+    "11": {"complete": 0, "localization": "183.0, 143.33333333333337","description": "Curar os pokemons"}
+}

@@ -1,0 +1,4 @@
+{
+    "Garry 01": [{"Name": "Charmander", "XP": 125, "Attacks": ["Growl", "Scratch"], "Life": 100, "Level": 5}],
+    "route 01":[{"Name": "Rattata", "Attacks": ["Tackle", "Tail Whip"], "Life": 100}, {"Name": "Pidgey", "Attacks": ["Gust"], "Life": 100}]
+}
