@@ -7,7 +7,7 @@ import json
 import random
 
 def intro():
-    text = Text(Point(*half_screen), "© 2021 Pôkemoon\n© 2021-2026 Furg\n© Eduardo Augusto\n© 149182")
+    text = Text(Point(*half_screen), "© 2021 Pokemon\n© 2021-2026 Furg\n© Eduardo Augusto\n© 149182")
     text.setFill('white')
     text.draw(win)
     win.getMouse()
@@ -288,13 +288,13 @@ def check_local_mission():
                     if abs(float(local_missao[0]) - mapa_centro.getX()) <= 100 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 2 :
                         missao7()
                         missoes_data['07']['complete'] = 1   
-            elif mapa_ativo == virdian_city['loja-02']:
+            elif mapa_ativo == viridian['loja-02']:
                 if num_missao == '08' and abs(float(local_missao[0]) - mapa_centro.getX()) <= 20 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 3:
                         missao08()
                         missoes_data[num_missao]['complete'] = 1
                 elif num_missao == '10' and is_pressed('SPACE') and abs(float(local_missao[0]) - mapa_centro.getX()) <= 4 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 6:
                     open_market()
-            elif mapa_ativo == virdian_city['cura-01']:
+            elif mapa_ativo == viridian['cura-01']:
                 if num_missao == '11' and is_pressed('SPACE') and abs(float(local_missao[0]) - mapa_centro.getX()) <= 4 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 3:
                     text_cura()
                     cura()
@@ -394,7 +394,7 @@ def check_local_change_maps():
         elif x <= 282.49999999999994 and x >= 269.66666666666674 and y <= -184 and y >= -186:
             change_map(pallet_interior['house1-02'], 37, -49)
         elif x <= 217.49999999999994 and x >= 145.66666666666674 and y >= 622:
-            change_map(virdian_city['exterior-00'], 0, 0)
+            change_map(viridian['exterior-00'], 0, 0)
     # Laboratório em pallet
     elif mapa_ativo == pallet_interior['lab-00']:
         if y < 25:
@@ -404,21 +404,21 @@ def check_local_change_maps():
         if x < 229 and y < 59 and x > 209:
             change_map(dict_mapas, 0, -5)
     # Mundo aberto Virdian City
-    elif mapa_ativo == virdian_city['exterior-00']:
+    elif mapa_ativo == viridian['exterior-00']:
         if y <= -188.66666666666669:
             change_map(dict_mapas, 0, 0)
         elif x >= 140 and x <= 155 and y >= 18 and y <= 22:
-            change_map(virdian_city['cura-01'], 0, 0)
+            change_map(viridian['cura-01'], 0, 0)
         elif x >= -23 and x <= -5 and y >= 130 and y <= 140:
-            change_map(virdian_city['loja-02'], 0, -45)
+            change_map(viridian['loja-02'], 0, -45)
     # Cura 01 virdian
-    elif mapa_ativo == virdian_city['cura-01']:
+    elif mapa_ativo == viridian['cura-01']:
         if y < 57:
-            change_map(virdian_city['exterior-00'], 0, 0)
+            change_map(viridian['exterior-00'], 0, 0)
     # Loja 02 virdian
-    elif mapa_ativo == virdian_city['loja-02']:
+    elif mapa_ativo == viridian['loja-02']:
         if y < 67:
-            change_map(virdian_city['exterior-00'], 0, 0)
+            change_map(viridian['exterior-00'], 0, 0)
 
 def starter_pokemon_text():
     rival = Image(Point(half_screen[0]-15, half_screen[1]), 'src/rival/w.png').draw(win)
@@ -572,11 +572,14 @@ def montar_arena(stats_npc, stats_p1):
     t = text_battle( str(stats_npc["Npc_name"]).ljust(31) + str("\n"+stats_npc["Name"]).ljust(32))
     win.getMouse()
     t.undraw()
-    return {'p1':life_p1,  'npc':life_npc}, [bg_battle,pokemon_p1_image, nivel_p1, name_p1_image, life_p1, pokemon_npc_image, nivel_npc, name_npc_image, life_npc]
+    return {'p1':life_p1,  'npc':life_npc}, [pokemon_npc_image, bg_battle,pokemon_p1_image, nivel_p1, name_p1_image, life_p1, nivel_npc, name_npc_image, life_npc]
 
 def undraw_array(arr):
     for img in arr:
-        img.undraw()
+        try:
+            img.undraw()
+        except:
+            pass
 
 def get_pokemon_inimigo_by_name(name):
     file = open('inimigos.json', 'r')
@@ -677,8 +680,129 @@ def choice_atack_num(stats_p1):
 def more_pokemons():
     pass
 
+def select_open_pokemon():
+    bag_bg = Image(Point(*half_screen), 'src/battle/poke/base.png').draw(win)
+    # Dados
+    data = get_json_data('bag.json')
+    arr_poke_all = []
+    arr_poke_page = []
+    arr_desmontar_page = []
+    index = 0
+    # Todos pokemons
+    for item in data:
+        if item != 'itens' and item != 'money':
+            arr_poke_all.append(item)
+    # Escrever dados na tela 
+    def draw_pokemons():
+        arr_poke_page = []
+        arr_desmontar_page = []
+        for i in range(6):
+            try:
+                poke = Text(Point(223.0, 56.0 + 16*i),'{0} {1}% L:{2}'.format(data[arr_poke_all[index + i]]['Name'], data[arr_poke_all[index + i]]['Life'], get_nivel(data[arr_poke_all[index + i]]['XP']))).draw(win)
+                poke.setTextColor(color_rgb(23, 23, 23))
+                poke.setSize(9)
+                poke.setFace("courier")
+                arr_poke_page.append(index + i)
+                arr_desmontar_page.append(poke)
+            except:
+                break
+        return arr_desmontar_page, arr_poke_page
+    arr_desmontar_page, arr_poke_page = draw_pokemons()
+    # Ações
+    choice = ''
+    choice_boolean = False
+    while choice != 'sair':
+        mouse = win.checkMouse()
+        if mouse != None:
+            x = mouse.getX()
+            y = mouse.getY()
+            for i in range(6):
+                if x >= 160 and x <= 238 and y >= 53 + i*16 and y <= 62 + i*16:
+                    select_1 = arr_poke_all[index + i]
+                    undraw_array(arr_desmontar_page)
+                    bag_bg.undraw()
+                    return int(select_1)
+            if x >= 274.0 and x <= 290.0 and y >= 156.0 and y <= 171.0:
+                choice = 'sair'
+                undraw_array(arr_desmontar_page)
+                bag_bg.undraw()
+
+                return 'repeat'
+
 def open_pokemon():
-    pass
+    bag_bg = Image(Point(*half_screen), 'src/bag_pokemon/base.png').draw(win)
+    itens_open = []
+    select_1, select_2 = None, None
+    # Dados
+    data = get_json_data('bag.json')
+    arr_poke_all = []
+    arr_poke_page = []
+    arr_desmontar_page = []
+    index = 0
+    # Todos pokemons
+    for item in data:
+        if item != 'itens' and item != 'money':
+            arr_poke_all.append(item)
+    # Escrever dados na tela 
+    def draw_pokemons():
+        arr_poke_page = []
+        arr_desmontar_page = []
+        for i in range(6):
+            try:
+                poke = Text(Point(223.0, 56.0 + 16*i),'{0} {1}% L:{2}'.format(data[arr_poke_all[index + i]]['Name'], data[arr_poke_all[index + i]]['Life'], get_nivel(data[arr_poke_all[index + i]]['XP']))).draw(win)
+                poke.setTextColor(color_rgb(23, 23, 23))
+                poke.setSize(9)
+                poke.setFace("courier")
+                arr_poke_page.append(index + i)
+                arr_desmontar_page.append(poke)
+            except:
+                break
+        return arr_desmontar_page, arr_poke_page
+    arr_desmontar_page, arr_poke_page = draw_pokemons()
+    # Ações
+    choice = ''
+    choice_boolean = False
+    while choice != 'sair':
+        mouse = win.checkMouse()
+        if mouse != None:
+            x = mouse.getX()
+            y = mouse.getY()
+            # print(x, y)
+            for i in range(6):
+                if x >= 160 and x <= 238 and y >= 53 + i*16 and y <= 62 + i*16:
+                    if select_1 == None:
+                        select_1 = arr_poke_all[index + i]
+                        t = text_down("Primeiro pokémon selecionado" + str(index + i).ljust(31))
+                    else: 
+                        select_2 = arr_poke_all[index + i]
+                        data = get_json_data('bag.json')
+                        data[select_1], data[select_2] = data[select_2], data[select_1]
+                        f = open('bag.json', 'w')
+                        json.dump(data, f)
+                        f.close()
+                        t = text_down("Pokémons trocados!".ljust(31))
+                        choice = 'sair'
+                        undraw_array(arr_desmontar_page)
+                        open_pokemon()
+
+
+            if x >= 226.0 and x <= 238.0 and y >= 155.0 and y <= 169.0:
+                if index > 0:
+                    undraw_array(arr_desmontar_page)
+                    index -= 1
+                    arr_desmontar_page, arr_poke_page = draw_pokemons()
+                    choice = 'back'
+            if x >= 253.0 and x <= 261.0 and y >= 156.0 and y <= 168.0:
+                if len(arr_poke_all) > index + 1 * 6:
+                    undraw_array(arr_desmontar_page)
+                    index += 1
+                    arr_desmontar_page, arr_poke_page = draw_pokemons()
+                    choice = 'next'
+            if x >= 274.0 and x <= 290.0 and y >= 156.0 and y <= 171.0:
+                choice = 'sair'
+                undraw_array(arr_desmontar_page)
+
+    bag_bg.undraw()
 
 def config_text(t):
     t.setTextColor(color_rgb(23, 23, 23))
@@ -774,7 +898,7 @@ def open_market():
                 open_market()
     bag_bg.undraw()
            
-def open_bag():
+def open_bag(is_battle):
     bag_bg = Image(Point(*half_screen), 'src/bag/base.png').draw(win)
     itens_open = []
     # Dados
@@ -824,6 +948,11 @@ def open_bag():
                 undraw_array(itens_open)
                 undraw_array(num_arr)
                 choice = 'sair'
+            if is_battle and choice != '':
+                undraw_array(itens_open)
+                undraw_array(num_arr)
+                bag_bg.undraw()
+                return choice, pokeballs, potions, antidotos
     bag_bg.undraw()
 
 def change_map(new_map, x, y):
@@ -883,19 +1012,21 @@ def missao7():
     cura()
 
 def battle_main(stats_npc_arr, npc_name):
-    global battle_montar, battle
+    global battle_montar
     id_pokemon = []
     stats_p1_arr = []
     category_status_p1 = []
     category_status_npc = []
     for i in range(6):
         try:
+            print('oxi')
             id_pokemon.append(str(i + 1))
             p1_pokemon = get_pokemon_in_bag(str(i + 1))
             data_p1 = get_pokemon_stats(p1_pokemon["Name"], p1_pokemon["Level"])
             p1_pokemon["Life"] = data_p1["HP"] * p1_pokemon["Life"] // 100
             p1_pokemon["MaxLife"] = data_p1["HP"]
             stats_p1_arr.append(p1_pokemon)
+            print(id_pokemon, p1_pokemon, i)
             category_status_p1.append({"Attack": 1, "Defense": 1, "SAtack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
             category_status_npc.append({"Attack": 1, "Defense": 1, "SAtack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
         except KeyError:
@@ -912,8 +1043,114 @@ def battle_main(stats_npc_arr, npc_name):
         life, arr_desmontar = montar_arena(stats_npc, stats_p1)
         battle_montar = False
         while True:
-            choice = fight_run(stats_p1)   
-            if choice == 'fight':
+            choice= fight_run(stats_p1) 
+            if choice == "bag":
+                choice, pokeballs, potions, antidotos  = open_bag(True)
+                if choice == 'sair':
+                    choice = 'repeat'
+                elif choice == 'pokeball':
+                    if npc_name != 'Selvagem':
+                        t = text_battle('Você não pode jogar uma PokéBall'.ljust(31) + '\nem um Pokémon de outro jogador'.ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                    elif pokeballs >= 1:
+                        set_item_in_bag('pokeballs', -1)
+                        chance = random.randrange(0,101)
+                        t = text_battle('{0} lançou uma Poké Ball '.format(start['name']).ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                        arr_desmontar[0].undraw()
+                        pokeball_gif = [Image(Point(260, 70), 'src/battle/pokeball/'+str(i)+'.png') for i in range(1, 29)]
+                        frame = 0
+                        for i in range(28):
+                            pokeball_gif[frame].draw(win)
+                            if win.checkMouse() != None:
+                                pass
+                            frame = (frame + 1) % len(pokeball_gif)
+                            pokeball_gif[frame].undraw()
+                            time.sleep(0.1)
+                        for i in range(28):
+                                try:
+                                    frame = (frame + 1) % len(pokeball_gif)
+                                    pokeball_gif[frame].undraw()
+                                except:
+                                    pass
+                        if chance <= 40:
+                            #Consegue capturar
+                            t = text_battle('Gotcha!'.ljust(31) + '\n{0} capturado!'.format(stats_npc['Name']).ljust(31))
+                            win.getMouse()
+                            t.undraw()
+                            frame = 0
+                            i = 1
+                            while True:
+                                try:
+                                    get_pokemon_in_bag(str(i + 1))
+                                    i += 1
+                                except:
+                                    break
+                            set_pokemon_in_bag(i + 1, {"Name": stats_npc['Name'], "Level":stats_npc['Level'], "XP": stats_npc['Level']**3, "Attacks": stats_npc['Attacks'], "Life": 100})
+                            
+                            break                        
+                        else:
+                            #Errou a captura
+                            arr_desmontar[0].draw(win)
+                            t = text_battle('{0} Escapou!'.format(stats_npc['Name']).ljust(31))
+                            win.getMouse()
+                            t.undraw()                            
+                    else:
+                        t = text_battle('Sem Pokébolas'.ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                        choice = 'repeat'
+                elif choice == 'potion':
+                    if potions >= 1:
+                        set_item_in_bag('potions', -1)
+                        stats_p1["Life"] += 20
+                        if stats_p1["Life"] > p1_pokemon["MaxLife"]:
+                            stats_p1["Life"] = p1_pokemon["MaxLife"]
+                        life['p1'].setText( str(int(stats_p1['Life']))+'/'+str(int(stats_p1['MaxLife']))) 
+                        t = text_battle('{0} foi curado em 20 de vida'.format(stats_p1["Name"]).ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                    else:
+                        t = text_battle('Sem potions'.ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                        choice = 'repeat'
+                elif choice == 'antidoto':
+                    if antidotos >= 1:
+                        category_status_p1[choice_pokemon_npc]['Poison'] = 0
+                        t = text_battle('{0} não está mais envenenado'.format(stats_p1["Name"]).ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                        set_item_in_bag('antidotos', -1)
+                    else:
+                        t = text_battle('Sem antidotos'.ljust(31))
+                        win.getMouse()
+                        t.undraw()
+                        choice = 'repeat'
+            elif choice == "pokemon":
+                choice = select_open_pokemon()  
+                if choice != 'repeat':
+                    undraw_array(arr_desmontar[2:6])
+                    choice_pokemon_p1 = choice - 1
+                    stats_p1 = stats_p1_arr[choice_pokemon_p1]
+                    print(choice,  stats_p1_arr[choice_pokemon_p1], stats_p1_arr)
+                    pokemon_p1_image = Image(Point(85, 146), "src/battle/back/"+stats_p1["Name"]+".png").draw(win)
+                    nivel_p1 = Text(Point(290, 136), get_nivel(stats_p1["XP"]))
+                    nivel_p1.setSize(8)
+                    nivel_p1.draw(win)
+                    name_p1_image = Text(Point(235, 136), stats_p1["Name"])
+                    name_p1_image.setSize(8)
+                    name_p1_image.draw(win)
+                    life_p1 = Text(Point(260,148), str(int(stats_p1['Life']))+'/'+str(int(stats_p1['MaxLife'])) )
+                    life_p1.setSize(8)
+                    life_p1.draw(win)
+                    t = text_battle("Vai! "+stats_p1["Name"]+'!'.ljust(19))
+                    win.getMouse()
+                    t.undraw()
+                    arr_desmontar[2:6] = [pokemon_p1_image, nivel_p1, name_p1_image, life_p1]
+            elif choice == 'fight':
                     # Player atacando o Inimigo
                 choice_attack_num = choice_atack_num(stats_p1) # get qual ataque que foi escolhido
                 level_p1 = get_nivel(stats_p1["XP"]) # Nivel do p1
@@ -957,10 +1194,12 @@ def battle_main(stats_npc_arr, npc_name):
                         t = text_battle(str(str(moedas)+ ' de moedas foram adicionadas a bolsa').ljust(33))
                         f = open('bag.json', 'w')
                         json.dump(data, f)
-                        f.close()
-                    
+                        f.close()                    
                     break
-                    # Npc atacando o player
+            elif choice == "run":
+                break
+            if choice != 'repeat':
+                # ----VEZ DO INIMIGO-----
                 choice_attack_num = random.randrange(0, len(stats_npc['Attacks'])) # get qual ataque que foi escolhido
                 name_attack = stats_npc["Attacks"][choice_attack_num] # Nome do ataque escolhido
                 name_pokemon_npc = stats_npc["Name"] # Nome do pokemon do p1
@@ -988,13 +1227,6 @@ def battle_main(stats_npc_arr, npc_name):
                     win.getMouse()
                     t.undraw()
                     break
-            elif choice == "run":
-                break
-            elif choice == "bag":
-                open_bag()
-            elif choice == "pokemon":
-                open_pokemon()
-            battle = False
         undraw_array(arr_desmontar)
 
 def main():   
@@ -1013,16 +1245,16 @@ def main():
     ativo.draw(win)
 
     while not (win.isClosed()):
+        if is_pressed('p'):
+            open_pokemon()
         if is_pressed('i'):
-            open_bag()
+            open_bag(False)
         check_mission_change()
         try:
             check_local_mission()
             check_local_change_maps()
         except:
             pass
-        if battle:
-            battle_main()
         else:
             battle_montar = True
             # localizacao = mapa_ativo[0][mapa_ativo[1]]['Arbustos'].getAnchor() 
@@ -1036,14 +1268,14 @@ def main():
                 direcao, is_move, pallet_interior['house2-01'][0][pallet_interior['house2-01'][1]] = move(framerate, direcao, pallet_interior['house2-01'][0][pallet_interior['house2-01'][1]], 70, 240//2 )
             elif mapa_ativo == pallet_interior['house1-02']:
                 direcao, is_move, pallet_interior['house1-02'][0][pallet_interior['house1-02'][1]] = move(framerate, direcao, pallet_interior['house1-02'][0][pallet_interior['house1-02'][1]], 70, 240//2 )
-            elif mapa_ativo == virdian_city['exterior-00']:
-                direcao, is_move,virdian_city['exterior-00'][0][virdian_city['exterior-00'][1]] = move(framerate, direcao, virdian_city['exterior-00'][0][virdian_city['exterior-00'][1]],  -213, 240//2)
-            elif mapa_ativo == virdian_city['cura-01']:
-                direcao, is_move,virdian_city['cura-01'][0][virdian_city['cura-01'][1]] = move(framerate, direcao, virdian_city['cura-01'][0][virdian_city['cura-01'][1]], 44, +127)
-            elif mapa_ativo == virdian_city['loja-02']:
-                direcao, is_move,virdian_city['loja-02'][0][virdian_city['loja-02'][1]] = move(framerate, direcao, virdian_city['loja-02'][0][virdian_city['loja-02'][1]],  74, 256//2)
-            elif mapa_ativo == virdian_city['casa-03']:
-                direcao, is_move,virdian_city['casa-03'][0][virdian_city['casa-03'][1]] = move(framerate, direcao, virdian_city['casa-03'][0][virdian_city['casa-03'][1]],  77, 240//2)
+            elif mapa_ativo == viridian['exterior-00']:
+                direcao, is_move,viridian['exterior-00'][0][viridian['exterior-00'][1]] = move(framerate, direcao, viridian['exterior-00'][0][viridian['exterior-00'][1]],  -213, 240//2)
+            elif mapa_ativo == viridian['cura-01']:
+                direcao, is_move,viridian['cura-01'][0][viridian['cura-01'][1]] = move(framerate, direcao, viridian['cura-01'][0][viridian['cura-01'][1]], 44, +127)
+            elif mapa_ativo == viridian['loja-02']:
+                direcao, is_move,viridian['loja-02'][0][viridian['loja-02'][1]] = move(framerate, direcao, viridian['loja-02'][0][viridian['loja-02'][1]],  74, 256//2)
+            elif mapa_ativo == viridian['casa-03']:
+                direcao, is_move,viridian['casa-03'][0][viridian['casa-03'][1]] = move(framerate, direcao, viridian['casa-03'][0][viridian['casa-03'][1]],  77, 240//2)
             else:
                 print('erro')
             p1Frame, p1, ativo = character_animation(win, arr_direcao[direcao], p1Frame, p1, ativo, is_move)
@@ -1083,14 +1315,15 @@ if __name__ == "__main__":
     dir_png = 'pallet/png/'
     dict_mapas = (mapa(dir_png, map_points), '00')
     pallet_interior = dict()
-    virdian_city = dict()
+    viridian = dict()
     pallet_interior['lab-00'] = (mapa('palletInterior/png/', half_screen), '00')
     pallet_interior['house2-01'] = (mapa('palletInterior/png/', half_screen), '01')
     pallet_interior['house1-02'] = (mapa('palletInterior/png/', half_screen), '02')
-    virdian_city['exterior-00'] = (mapa('virdianCity/png/', (half_screen[0] - 10, half_screen[1] - 305)), '00')
-    virdian_city['cura-01'] = (mapa('virdianCity/png/', (half_screen[0] + 3, half_screen[1] - 50)), '01')
-    virdian_city['loja-02'] = (mapa('virdianCity/png/', half_screen), '02')
-    virdian_city['casa-03'] = (mapa('virdianCity/png/', half_screen), '03')
+    viridian['exterior-00'] = (mapa('virdianCity/png/', (half_screen[0] - 10, half_screen[1] - 305)), '00')
+    viridian['cura-01'] = (mapa('virdianCity/png/', (half_screen[0] + 3, half_screen[1] - 50)), '01')
+    viridian['loja-02'] = (mapa('virdianCity/png/', half_screen), '02')
+    viridian['casa-03'] = (mapa('virdianCity/png/', half_screen), '03')
+    viridian['forest-00'] = (mapa('virdianForest/png/', half_screen), '00')
     if start['first']:
         mapa_ativo = dict_mapas
     else:
