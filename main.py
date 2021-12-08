@@ -102,9 +102,8 @@ def tutorial():
 def entry_input():
         input = Entry(Point(*half_screen), 13)
         input.draw(win)
-        key = win.checkKey()
         while win.checkKey() != "Return":
-            key = win.checkKey()
+            pass
         text = input.getText()
         input.undraw()
         return text
@@ -165,7 +164,7 @@ def check_colision(mapas, x, y):
 
 def move(framerate, direcao, mapas, x, y):
     if is_pressed('b'):
-        velocidade = 110 * framerate * 2
+        velocidade = 110 * framerate * 10
     else:
         velocidade = 110 * framerate
     is_move = True
@@ -204,6 +203,16 @@ def wild_pokemon():
             pokemon = pokemons_inimigo[num]
             pokemon['Level'] = level
             battle_main([pokemon], 'Selvagem')
+        if mapa_ativo == viridian['forest-00']:
+            pokemons_inimigo = get_pokemon_inimigo_by_name('viridian forest')
+            if random.randrange(0, 101) < 5:
+                num = 3
+            else:
+                num = random.randrange(0, 3)
+            level = random.randrange(3,8)
+            pokemon = pokemons_inimigo[num]
+            pokemon['Level'] = level
+            battle_main([pokemon], 'Selvagem')
 
 def check_mission_change():
     global mission_change, missoes_data
@@ -226,7 +235,7 @@ def check_local_mission():
                         warning_message() 
             elif mapa_ativo == pallet_interior['lab-00']:
                 if abs(float(local_missao[0]) - mapa_centro.getX()) <= 2 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 4:
-                    if num_missao == '09':
+                    if num_missao == '09' and missoes_data['08']['complete']:
                             missao9()         
                             missoes_data[num_missao]['complete'] = 1
                     if num_missao == '03':
@@ -235,9 +244,9 @@ def check_local_mission():
                     elif missoes_data['03']['complete'] and not missoes_data['04']['complete']:
                         choice = ''
                         if is_pressed('SPACE'):
-                            charmander = {"Name":"Charmander", "XP": 125, "Attacks":["Growl", "Scratch"], "Life": 100, "Level": 5}
-                            bulbasaur = {"Name":"Bulbasaur", "XP": 125, "Attacks":["Growl", "Tackle"], "Life": 100, "Level": 5}
-                            squirtle = {"Name":"Squirtle", "XP": 125, "Attacks":["Tackle", "Tail Whip"], "Life": 100, "Level": 5}
+                            charmander = {"Name":"Charmander", "XP": 125, "Attacks":["Growl", "Scratch", 'Ember', 'Leer'], "Life": 100, "Level": 5}
+                            bulbasaur = {"Name":"Bulbasaur", "XP": 125, "Attacks":["Growl", "Tackle", 'Leech Seed', 'Vine Whip'], "Life": 100, "Level": 5}
+                            squirtle = {"Name":"Squirtle", "XP": 125, "Attacks":["Tackle", "Tail Whip", 'Bubble', 'Water Gun'], "Life": 100, "Level": 5}
 
                             if num_missao == '04':
                                     choice = starter_pokemon_choice(0)      
@@ -298,6 +307,10 @@ def check_local_mission():
                 if num_missao == '11' and is_pressed('SPACE') and abs(float(local_missao[0]) - mapa_centro.getX()) <= 4 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 3:
                     text_cura()
                     cura()
+            elif mapa_ativo == pewter['gym-02']:
+                if num_missao == '12' and abs(float(local_missao[0]) - mapa_centro.getX()) <= 4 and abs(float(local_missao[1]) - mapa_centro.getY()) <= 3:
+                    text_cura()
+                    cura()
 
 def cura():
     data = get_json_data('bag.json')
@@ -349,6 +362,16 @@ def missao9():
     text_down('Vou falar para ela não te dar,'.ljust(31) + '\n{0}! Hahaha!'.format(start['name']).ljust(31))
     text_down('Depois dessa nem se preocupe'.ljust(31) + '\nem tentar me seguir.'.ljust(31))
     rival.undraw()
+    text_down('OAK: {0}, tenho algumas dicas'.format(start['name']).ljust(31) + '\npara você!'.ljust(31))
+    text_down('Clique em "i" para'.ljust(31) + '\nabrir o inventário'.ljust(31))
+    text_down('Clique em "p" para'.ljust(31) + '\nabrir o sua mala de Pokémon'.ljust(31))
+    text_down('Os 6 primeiros que aparecem'.ljust(31) + '\nserá seu time'.ljust(31))
+    text_down('Para editar, é só clicar'.ljust(31) + '\nem um Pokémon e depois'.ljust(31))
+    text_down('Em outro para trocar de lugar!'.ljust(31) + '\ns'.ljust(31))
+    text_down('Lembre de ir ao centro médico'.ljust(31) + '\npara restaurar suas vidas.'.ljust(31))
+    text_down('Você também pode comprar vários'.ljust(31) + '\nitens na loja, como pokebolas!'.ljust(31))
+    text_down('É só clicar espaço'.ljust(31) + '\npara interagir!'.ljust(31))
+    text_down('Boa sorte na sua aventura!'.ljust(31) + '\n'.ljust(31))
 
 def starter_pokemon_choice(choice):
     arr = ['Bulbasaur', 'Squirtle', 'Charmander']
@@ -382,7 +405,7 @@ def missao08():
         text_down(t)
 # Mudar mapas
 def check_local_change_maps():
-    global mapa_ativo
+    global mapa_ativo, mapa_anterior
     localizacao = mapa_ativo[0][mapa_ativo[1]]['Arbustos'].getAnchor() 
     x, y = localizacao.getX(), localizacao.getY()
     if is_pressed('l'):
@@ -410,16 +433,36 @@ def check_local_change_maps():
         elif x >= 140 and x <= 155 and y >= 18 and y <= 22:
             change_map(viridian['cura-01'], 0, 0)
         elif x >= -23 and x <= -5 and y >= 130 and y <= 140:
-            change_map(viridian['loja-02'], 0, -45)
+                change_map(viridian['loja-02'], 0, -45)
+        elif x >= 188.333333333333 and x <= 267.1666666666666 and y >= 436.50000000000034:
+            change_map(viridian['forest-00'], 0, 0)
     # Cura 01 virdian
     elif mapa_ativo == viridian['cura-01']:
         if y < 57:
-            change_map(viridian['exterior-00'], 0, 0)
+            change_map(mapa_anterior, 0, 0)
     # Loja 02 virdian
     elif mapa_ativo == viridian['loja-02']:
         if y < 67:
+            change_map(mapa_anterior, 0, 0)
+    # Viridian forest 
+    elif mapa_ativo == viridian['forest-00']:
+        if y <= -324:
             change_map(viridian['exterior-00'], 0, 0)
-
+        if y >= 515 and x >= 440:
+            change_map(pewter['city-00'], 0, 0)
+    # Pewter City 
+    elif mapa_ativo == pewter['city-00']:
+        if y <= -185:
+            change_map(viridian['forest-00'], 0, 0)
+        elif x >= 281 and x <= 296 and y >= 33 and y <= 47:
+            change_map(viridian['cura-01'], 0, 0)
+        elif x >= 105 and x <= 120 and y >= 144 and y <= 155:
+            change_map(viridian['loja-02'], 0, 0)
+        elif x >= 313 and x <= 327 and y >= 177 and y <= 185:
+            change_map(pewter['gym-01'], 0, 0)
+    elif mapa_ativo == pewter['gym-01']:
+        if x >= 181.8333333333336 and x <= 196.50000000000034 and y <= 13.166666666666607:
+            change_map(mapa_anterior, 0, 0)
 def starter_pokemon_text():
     rival = Image(Point(half_screen[0]-15, half_screen[1]), 'src/rival/w.png').draw(win)
     text_down('Garry: Vovô!'.ljust(31) + '\nEstou farto de esperar'.ljust(31))
@@ -434,6 +477,8 @@ def starter_pokemon_text():
     text_down('Você pode escolher um.'.ljust(31) + '\nVá! Escolha!'.ljust(31))
     text_down('Garry: Hey! Vovô! Não é justo!'.ljust(31) + '\nE eu?'.ljust(31))
     text_down('OAK: Calma, Garry.'.ljust(31) + '\nDepois é a sua vez!'.ljust(31))
+    text_down('Clique em espaço'.ljust(31) + '\nperto das pokebolas'.ljust(31))
+
     rival.undraw()
 
 def warning_first():
@@ -477,7 +522,7 @@ def get_pokemon_stats(name, nivel):
     data[name]['HP'] += nivel * (data[name]['HP'])* 1/50
     data[name]["Attack"] += nivel * data[name]['Attack']* 1/50
     data[name]["Defense"] += nivel * data[name]['Defense']* 1/50
-    data[name]["SAtack"] += nivel * data[name]['SAtack']* 1/50
+    data[name]["SAttack"] += nivel * data[name]['SAttack']* 1/50
     data[name]['SDefense'] += nivel * data[name]['SDefense']* 1/50
     data[name]['Speed'] += nivel * data[name]['Speed']* 1/50
     return data[name]
@@ -749,7 +794,7 @@ def open_pokemon():
         arr_desmontar_page = []
         for i in range(6):
             try:
-                poke = Text(Point(223.0, 56.0 + 16*i),'{0} {1}% L:{2}'.format(data[arr_poke_all[index + i]]['Name'], data[arr_poke_all[index + i]]['Life'], get_nivel(data[arr_poke_all[index + i]]['XP']))).draw(win)
+                poke = Text(Point(223.0, 56.0 + 16*i),'{0} {1}% L:{2}'.format(data[arr_poke_all[index + i]]['Name'], int(data[arr_poke_all[index + i]]['Life']), get_nivel(data[arr_poke_all[index + i]]['XP']))).draw(win)
                 poke.setTextColor(color_rgb(23, 23, 23))
                 poke.setSize(9)
                 poke.setFace("courier")
@@ -812,7 +857,6 @@ def config_text(t):
     return t
 
 def choice_market_qtd(choice, value, data, money):
-    print('oxiiiiiii')
     text_down("Qual quantidade que quer comprar?".ljust(31))
     while True:
         try:
@@ -888,7 +932,6 @@ def open_market():
             if choice_boolean:
                 choice_boolean = False
                 data['itens'][choice], data['money'] = choice_market_qtd(choice, values[choice], data['itens'][choice], data['money'])
-                print(data)
                 f = open('bag.json', 'w')
                 json.dump(data, f)
                 f.close()
@@ -956,7 +999,7 @@ def open_bag(is_battle):
     bag_bg.undraw()
 
 def change_map(new_map, x, y):
-    global win, mapa_ativo, maps_already_loaded
+    global win, mapa_ativo, maps_already_loaded, mapa_anterior
     if not new_map in maps_already_loaded:
         maps_already_loaded.append(new_map)
     else:
@@ -964,13 +1007,11 @@ def change_map(new_map, x, y):
     win.close()
     win = GraphWin("Plataform Game", *screen, False)
     win.setBackground('black')
+    mapa_anterior = mapa_ativo
     mapa_ativo = new_map
     draw_map(mapa_ativo, x, y)
 
 def status_atacks_effects(stats_jogador, stats_inimigo, name_attack, name_jogador, name_inimigo):
-    t = text_battle(str(name_jogador + ' usuou ' + name_attack.lower()).ljust(33))
-    win.getMouse()
-    t.undraw()
     if name_attack == 'Growl':
         stats_inimigo["Attack"] *= 0.9
         t = text_battle(str('O ataque de {0} diminuiu').format(name_inimigo).ljust(33))
@@ -982,19 +1023,19 @@ def status_atacks_effects(stats_jogador, stats_inimigo, name_attack, name_jogado
         win.getMouse()
         t.undraw()
     elif name_attack == 'Leech Seed':
-        roubado = stats_jogador['Life'] * 1/8
-        stats_jogador['Life'] += roubado
-        stats_inimigo['Life'] -= roubado
-        t = text_battle(str('{0} roubou {1} de vida').format(name_jogador, roubado).ljust(33))
-        win.getMouse()
-        t.undraw()
-    elif name_attack == 'Tail Whip' or name_attack == 'Leer':
+        stats_inimigo['Vampire'] = True
+    elif name_attack == 'Tail Whip' or name_attack == 'Leer' or name_attack == 'Withdraw':
         stats_inimigo['Defense'] *= 0.9
         t = text_battle(str('Defesa de {0} diminuida').format(name_inimigo).ljust(33))
         win.getMouse()
         t.undraw()
-    elif name_attack == 'Withdraw':
-        stats_inimigo['Defense'] *= 1.1
+    elif name_attack == "Sand Attack":
+        stats_inimigo['Accuracy'] *= 0.92
+        t = text_battle(str('Precisão de {0} diminuida').format(name_inimigo).ljust(33))
+        win.getMouse()
+        t.undraw()
+    elif name_attack == 'Harden':
+        stats_jogador['Defense'] *= 1.1
         t = text_battle(str('Defesa de {0} aumentada').format(name_jogador).ljust(33))
         win.getMouse()
         t.undraw()
@@ -1011,26 +1052,39 @@ def missao7():
     battle_main(pokemons_inimigo, 'Garry lançou')
     cura()
 
+def batalha_brock():
+    global mapa_anterior, mapa_ativo
+    text_down('Então, você está aqui! Sou Brock.'.ljust(31) + '\nSou o lider do ginásio de Pewter'.ljust(31))
+    text_down('Meu desejo é evidente, mesmos nos!'.ljust(31) + '\nmeus pokémon'.ljust(31))
+    text_down('Meus Pokémon são todos rocha,'.ljust(31) + '\ntem verdadeira determinação.'.ljust(31))
+    text_down('Está certo - meus Pokémon são'.ljust(31) + '\ntipo ROCHA!'.ljust(31))
+    text_down('Fuhahaha! Você quer me enfrentar'.ljust(31) + '\ntsabendo que vai perder?'.ljust(31))
+    text_down('Isso é honra, TREINADOR'.ljust(31) + '\nque obriga a me desafiar'.ljust(31))
+    text_down('Ótimo, então!'.ljust(31) + '\nMostre-me seu melhor!'.ljust(31))
+    pokemons_inimigo = get_pokemon_inimigo_by_name('Brock')
+    battle_main(pokemons_inimigo, 'Brock lançou')
+
 def battle_main(stats_npc_arr, npc_name):
     global battle_montar
     id_pokemon = []
     stats_p1_arr = []
     category_status_p1 = []
     category_status_npc = []
+    qtd_poke_npc = len(stats_npc_arr)
     for i in range(6):
         try:
-            print('oxi')
             id_pokemon.append(str(i + 1))
             p1_pokemon = get_pokemon_in_bag(str(i + 1))
-            data_p1 = get_pokemon_stats(p1_pokemon["Name"], p1_pokemon["Level"])
+            data_p1 = get_pokemon_stats(p1_pokemon["Name"], get_nivel(p1_pokemon["XP"]))
             p1_pokemon["Life"] = data_p1["HP"] * p1_pokemon["Life"] // 100
             p1_pokemon["MaxLife"] = data_p1["HP"]
             stats_p1_arr.append(p1_pokemon)
-            print(id_pokemon, p1_pokemon, i)
-            category_status_p1.append({"Attack": 1, "Defense": 1, "SAtack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
-            category_status_npc.append({"Attack": 1, "Defense": 1, "SAtack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
-        except KeyError:
+            category_status_p1.append({"Attack": 1, "Defense": 1, "SAttack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
+        except:
             pass
+    qtd_poke_p1 = len(stats_p1_arr)
+    for item in stats_npc_arr:
+        category_status_npc.append({"Attack": 1, "Defense": 1, "SAttack": 1, "SDefense": 1, "Speed": 1, "Accuracy": 1, "Poison": 0, "Vampire": 0})
     choice_pokemon_p1 = 0
     choice_pokemon_npc = 0
     stats_p1 = stats_p1_arr[choice_pokemon_p1]
@@ -1135,7 +1189,6 @@ def battle_main(stats_npc_arr, npc_name):
                     undraw_array(arr_desmontar[2:6])
                     choice_pokemon_p1 = choice - 1
                     stats_p1 = stats_p1_arr[choice_pokemon_p1]
-                    print(choice,  stats_p1_arr[choice_pokemon_p1], stats_p1_arr)
                     pokemon_p1_image = Image(Point(85, 146), "src/battle/back/"+stats_p1["Name"]+".png").draw(win)
                     nivel_p1 = Text(Point(290, 136), get_nivel(stats_p1["XP"]))
                     nivel_p1.setSize(8)
@@ -1160,18 +1213,31 @@ def battle_main(stats_npc_arr, npc_name):
                 data_atack = get_json_data('atacks.json')
                 data_atack = data_atack[name_attack]
                 # Tipo de ataque - status ou fisico ou especial
+                t = text_battle(str(name_pokemon_p1 + ' usuou ' + name_attack.lower()).ljust(33))
+                win.getMouse()
+                t.undraw()
                 if data_atack['Category'] == 'Status':
                     category_status_p1[choice_pokemon_p1], category_status_npc[choice_pokemon_npc] = status_atacks_effects(category_status_p1[choice_pokemon_p1], category_status_npc[choice_pokemon_npc], name_attack, stats_p1["Name"], stats_npc["Name"])
                 else:
                             # calculo do dano
                     damage = calc_damage({"Name": name_attack, "Level": level_p1, "Name_pokemon": name_pokemon_p1}, {"Name": stats_npc["Name"], "Level": stats_npc["Level"]}, data_atack, category_status_p1[choice_pokemon_p1], category_status_npc[choice_pokemon_npc])
                     stats_npc["Life"] = stats_npc["Life"] - damage # faz a vida atual menos o dano 
-                    if stats_npc["Life"] < 0:
-                        stats_npc["Life"] = 0
-                    life['npc'].setText(str(int(stats_npc['Life']))+'/'+str(int(data_npc['HP'])) ) # coloca na tela
-                    t = text_battle(str(name_pokemon_p1 + ' usuou ' + name_attack.lower()).ljust(33))
-                    win.getMouse()
-                    t.undraw()
+                if category_status_npc[choice_pokemon_npc]["Poison"]:
+                        stats_npc["Life"] -= stats_npc["MaxLife"]/16
+                        t = text_battle(str('{0} sofreu dano por Poison').format(stats_npc['Name']).ljust(33))
+                        win.getMouse()
+                        t.undraw()
+                elif category_status_npc[choice_pokemon_npc]["Vampire"]:
+                        stats_npc["Life"] -= stats_npc["Life"]/8
+                        stats_p1["Life"] += stats_p1["Life"]/8
+                        if stats_p1["Life"] > stats_p1["MaxLife"]:
+                            stats_p1["Life"] = stats_p1["MaxLife"]
+                        t = text_battle(str('{0} teve sua vida roubada.').format(stats_npc['Name']).ljust(33))
+                        win.getMouse()
+                        t.undraw()
+                if stats_npc["Life"] < 0:
+                    stats_npc["Life"] = 0
+                life['npc'].setText(str(int(stats_npc['Life']))+'/'+str(int(data_npc['HP'])) ) # coloca na tela
                         #  ---- Se jogador vencer -----
                 if stats_npc['Life'] == 0: 
                     base_xp = get_json_data('base_xp.json')
@@ -1185,17 +1251,40 @@ def battle_main(stats_npc_arr, npc_name):
                         t = text_battle(str(name_pokemon_p1 + ' subiu para o nível ' + str(int(stats_p1["XP"]**(1/3)))).ljust(33))
                         win.getMouse()
                         t.undraw()
-                    stats_p1["Life"] = 100*stats_p1["Life"] /stats_p1["MaxLife"] 
-                    set_pokemon_in_bag(id_pokemon[choice_pokemon_p1], stats_p1)
-                    if npc_name != 'Selvagem':
-                        data = get_json_data('bag')
-                        moedas = data['money']
-                        moedas += xp_gain*1.15
-                        t = text_battle(str(str(moedas)+ ' de moedas foram adicionadas a bolsa').ljust(33))
-                        f = open('bag.json', 'w')
-                        json.dump(data, f)
-                        f.close()                    
-                    break
+                    if choice_pokemon_npc == qtd_poke_p1 - 1:
+                        # jogo cabo
+                        stats_p1["Life"] = 100*stats_p1["Life"] /stats_p1["MaxLife"] 
+                        set_pokemon_in_bag(id_pokemon[choice_pokemon_p1], stats_p1)
+                        if npc_name != 'Selvagem':
+                            data = get_json_data('bag.json')
+                            data['money'] += int(xp_gain*2.5)
+                            t = text_battle(str(str(int(xp_gain*2.5))+ ' de moedas'.ljust(31) + '\nforam adicionadas a bolsa').ljust(33))
+                            win.getMouse()
+                            t.undraw()
+                            f = open('bag.json', 'w')
+                            json.dump(data, f)
+                            f.close()           
+                        break
+                    else:
+                        # Poke inimigo vai para o próximo
+                        choice_pokemon_npc += 1
+                        undraw_array(arr_desmontar[-3:1])
+                        stats_npc = stats_npc_arr[choice_pokemon_npc]
+                        data_npc = get_pokemon_stats(stats_npc["Name"], stats_npc["Level"])
+                        stats_npc["Life"] = data_npc["HP"]
+                        stats_npc['HP'] = data_npc['HP']
+                        stats_npc["Npc_name"] = npc_name
+                        pokemon_npc_image = Image(Point(260, 70), "src/battle/front/"+stats_npc["Name"]+".png").draw(win)
+                        nivel_npc = Text(Point(110, 38),stats_npc["Level"])
+                        nivel_npc.setSize(8)
+                        nivel_npc.draw(win)
+                        name_npc_image = Text(Point(60, 38), stats_npc["Name"])
+                        name_npc_image.setSize(8)
+                        name_npc_image.draw(win)
+                        life_npc = Text(Point(95,48), str(int(stats_npc['Life']))+'/'+str(int(stats_npc['HP'])) )
+                        life_npc.setSize(8)
+                        life_npc.draw(win)
+                        arr_desmontar[-3:1] = [pokemon_npc_image, nivel_npc, name_npc_image,life_npc]
             elif choice == "run":
                 break
             if choice != 'repeat':
@@ -1219,14 +1308,55 @@ def battle_main(stats_npc_arr, npc_name):
                     t = text_battle(str(name_pokemon_npc + ' usuou ' + name_attack.lower()).ljust(33))
                     win.getMouse()
                     t.undraw()
-                        # --- Jogador perdeu ---
-                if stats_p1['Life'] == 0:
-                    t = text_battle(str(name_pokemon_p1 + 'desmaiou.').ljust(33))
-                    stats_p1["Life"] = stats_p1["Life"] //stats_p1["MaxLife"] * 100
-                    set_pokemon_in_bag(id_pokemon[choice_pokemon_p1], stats_p1)
+                if category_status_p1[choice_pokemon_p1]["Poison"]:
+                    stats_p1["Life"] -= stats_p1["MaxLife"]/16
+                    t = text_battle(str('{0} sofreu dano por Poison.').format(stats_p1['Name']).ljust(33))
                     win.getMouse()
                     t.undraw()
-                    break
+                elif category_status_p1[choice_pokemon_p1]["Vampire"]:
+                    stats_p1["Life"] -= stats_p1["Life"]/8
+                    stats_npc["Life"] += stats_p1["Life"]/8
+                    if stats_npc["Life"] > stats_npc["HP"]:
+                            stats_npc["Life"] = stats_npc["HP"]
+                    t = text_battle(str('{0} teve sua vida roubada.').format(stats_p1['Name']).ljust(33))
+                    win.getMouse()
+                    t.undraw()
+                        # --- Jogador perdeu ---
+                if stats_p1['Life'] == 0:
+                    if choice_pokemon_p1 == qtd_poke_npc - 1:
+                        t = text_battle(str(name_pokemon_p1 + 'desmaiou.').ljust(33))
+                        stats_p1["Life"] = stats_p1["Life"] //stats_p1["MaxLife"] * 100
+                        set_pokemon_in_bag(id_pokemon[choice_pokemon_p1], stats_p1)
+                        win.getMouse()
+                        t.undraw()
+                        t = text_battle(str('Você não tem mais Pokémon.').ljust(33))
+                        win.getMouse()
+                        t.undraw()
+                        break
+                    else:
+                        #Próximo Pókemon
+                        t = text_battle(str('Escolha um outro Pokémon').ljust(33))
+                        win.getMouse()
+                        t.undraw()
+                        choice = select_open_pokemon()  
+                        if choice != 'repeat':
+                            undraw_array(arr_desmontar[2:6])
+                            choice_pokemon_p1 = choice - 1
+                            stats_p1 = stats_p1_arr[choice_pokemon_p1]
+                            pokemon_p1_image = Image(Point(85, 146), "src/battle/back/"+stats_p1["Name"]+".png").draw(win)
+                            nivel_p1 = Text(Point(290, 136), get_nivel(stats_p1["XP"]))
+                            nivel_p1.setSize(8)
+                            nivel_p1.draw(win)
+                            name_p1_image = Text(Point(235, 136), stats_p1["Name"])
+                            name_p1_image.setSize(8)
+                            name_p1_image.draw(win)
+                            life_p1 = Text(Point(260,148), str(int(stats_p1['Life']))+'/'+str(int(stats_p1['MaxLife'])) )
+                            life_p1.setSize(8)
+                            life_p1.draw(win)
+                            t = text_battle("Vai! "+stats_p1["Name"]+'!'.ljust(19))
+                            win.getMouse()
+                            t.undraw()
+                            arr_desmontar[2:6] = [pokemon_p1_image, nivel_p1, name_p1_image, life_p1]
         undraw_array(arr_desmontar)
 
 def main():   
@@ -1276,6 +1406,12 @@ def main():
                 direcao, is_move,viridian['loja-02'][0][viridian['loja-02'][1]] = move(framerate, direcao, viridian['loja-02'][0][viridian['loja-02'][1]],  74, 256//2)
             elif mapa_ativo == viridian['casa-03']:
                 direcao, is_move,viridian['casa-03'][0][viridian['casa-03'][1]] = move(framerate, direcao, viridian['casa-03'][0][viridian['casa-03'][1]],  77, 240//2)
+            elif mapa_ativo == viridian['forest-00']:
+                direcao, is_move,viridian['forest-00'][0][viridian['forest-00'][1]] = move(framerate, direcao, viridian['forest-00'][0][viridian['forest-00'][1]], -347, 253//2)
+            elif mapa_ativo == pewter['city-00']:
+                direcao, is_move,pewter['city-00'][0][pewter['city-00'][1]] = move(framerate, direcao, pewter['city-00'][0][pewter['city-00'][1]], -200, 253//2)
+            elif mapa_ativo == pewter['gym-01']:
+                direcao, is_move,pewter['gym-01'][0][pewter['gym-01'][1]] = move(framerate, direcao, pewter['gym-01'][0][pewter['gym-01'][1]], 65, 253//2)
             else:
                 print('erro')
             p1Frame, p1, ativo = character_animation(win, arr_direcao[direcao], p1Frame, p1, ativo, is_move)
@@ -1316,6 +1452,7 @@ if __name__ == "__main__":
     dict_mapas = (mapa(dir_png, map_points), '00')
     pallet_interior = dict()
     viridian = dict()
+    pewter = dict()
     pallet_interior['lab-00'] = (mapa('palletInterior/png/', half_screen), '00')
     pallet_interior['house2-01'] = (mapa('palletInterior/png/', half_screen), '01')
     pallet_interior['house1-02'] = (mapa('palletInterior/png/', half_screen), '02')
@@ -1323,7 +1460,10 @@ if __name__ == "__main__":
     viridian['cura-01'] = (mapa('virdianCity/png/', (half_screen[0] + 3, half_screen[1] - 50)), '01')
     viridian['loja-02'] = (mapa('virdianCity/png/', half_screen), '02')
     viridian['casa-03'] = (mapa('virdianCity/png/', half_screen), '03')
-    viridian['forest-00'] = (mapa('virdianForest/png/', half_screen), '00')
+    viridian['forest-00'] = (mapa('viridianForest/png/', (half_screen[0] + -20, half_screen[1] - 440)), '00')
+    pewter['city-00'] = (mapa('PewterCity/png/', (half_screen[0] + 23, half_screen[1] -285)), '00')
+    pewter['gym-01'] = (mapa('PewterCity/png/', (half_screen[0], half_screen[1] -50)), '01')
+
     if start['first']:
         mapa_ativo = dict_mapas
     else:
