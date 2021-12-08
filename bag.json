@@ -1,1 +1,1 @@
-{"itens": {"pokeballs": 93, "potions": 3, "antidotos": 10}, "money": 162, "1": {"Name": "Charmander", "XP": 248, "Attacks": ["Growl", "Scratch", "Ember", "Leer"], "Life": 52.6643330553292, "Level": 5, "MaxLife": 42.9}, "2": {"Name": "Pikachu", "Level": 3, "XP": 27, "Attacks": ["Growl", "Thunder Shock", "Swift", "Quick Attack"], "Life": 100}}
+{"itens": {"pokeballs": 0, "potions": 0, "antidotos": 0}, "money": 1000, "1": {"Name": "Charmander", "XP": 248, "Attacks": ["Growl", "Scratch", "Ember", "Leer"], "Life": 52.6643330553292, "Level": 5, "MaxLife": 42.9}}
