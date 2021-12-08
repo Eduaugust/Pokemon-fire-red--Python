@@ -164,7 +164,7 @@ def check_colision(mapas, x, y):
 
 def move(framerate, direcao, mapas, x, y):
     if is_pressed('b'):
-        velocidade = 110 * framerate * 10
+        velocidade = 110 * framerate * 2
     else:
         velocidade = 110 * framerate
     is_move = True
@@ -1433,16 +1433,16 @@ if __name__ == "__main__":
     win = GraphWin("Plataform Game", *screen, False)
     win.setBackground('black')
 
-    # Start no jogo
-    # intro()
+    Start no jogo
+    intro()
 
     #dict_mapas
     maps_already_loaded = []
     if start['first']:
         tutorial()
-        map_points = "277, -186".split(', ')
+        map_points = "277, -200".split(', ')
     else:
-        map_points = "277, 600".split(', ')
+        map_points = "277, -200".split(', ')
 
         #map_points = start['levels']['level00'].split(', ')
     map_points = tuple([float(i) for i in map_points])
