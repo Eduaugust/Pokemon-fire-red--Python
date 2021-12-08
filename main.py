@@ -1433,7 +1433,7 @@ if __name__ == "__main__":
     win = GraphWin("Plataform Game", *screen, False)
     win.setBackground('black')
 
-    Start no jogo
+    #Start no jogo
     intro()
 
     #dict_mapas
