@@ -7,6 +7,7 @@ import json
 import random
 
 def intro():
+    global win
     text = Text(Point(*half_screen), "© 2021 Pokemon\n© 2021-2026 Furg\n© Eduardo Augusto\n© 149182")
     text.setFill('white')
     text.draw(win)
@@ -35,7 +36,9 @@ def intro():
     i = 1
 
     #Limpando tela
-    Image(Point(0,0), 'src/tela_preta.png').draw(win)
+    win.close()
+    win = GraphWin("Plataform Game", *screen, False)
+    win.setBackground('black')
 
 def tutorial():
     def pokeball(closepen):
@@ -198,7 +201,7 @@ def wild_pokemon():
     if random.randrange(0, 101) == 1:
         if mapa_ativo == dict_mapas:
             pokemons_inimigo = get_pokemon_inimigo_by_name('route 01')
-            num = random.randrange(0, 1)
+            num = random.randrange(0, 2)
             level = random.randrange(2,5)
             pokemon = pokemons_inimigo[num]
             pokemon['Level'] = level
@@ -1381,11 +1384,11 @@ def main():
             open_bag(False)
         check_mission_change()
         try:
-            check_local_mission()
             check_local_change_maps()
+            check_local_mission()
         except:
             pass
-        else:
+        if True:
             battle_montar = True
             # localizacao = mapa_ativo[0][mapa_ativo[1]]['Arbustos'].getAnchor() 
             # x, y = localizacao.getX(), localizacao.getY()
@@ -1434,7 +1437,7 @@ if __name__ == "__main__":
     win.setBackground('black')
 
     #Start no jogo
-    intro()
+    # intro()
 
     #dict_mapas
     maps_already_loaded = []
