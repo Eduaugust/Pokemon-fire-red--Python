@@ -1437,7 +1437,7 @@ if __name__ == "__main__":
     win.setBackground('black')
 
     #Start no jogo
-    # intro()
+    intro()
 
     #dict_mapas
     maps_already_loaded = []
